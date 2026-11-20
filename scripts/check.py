@@ -1,6 +1,6 @@
 """Pre-post check of a finished clip.
 
-usage: python check.py <clip.mp4> [--campaign campaigns.md] [--caption "text"]
+usage: python check.py <clip.mp4> [--campaign campaigns.md] [--caption "text"] [--no-gate] [--no-remix]
 Reads clip_<n>.json (written by cut.py) next to the clip if present. Exit code 1 on any FAIL.
 campaigns.md lines understood: min_seconds: 15 / max_seconds: 60 / required_hashtags: #a #b / required_mention: @x
 """
@@ -8,6 +8,7 @@ import argparse, re, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from common import ffprobe, load_json
+from gate import evaluate as gate_evaluate
 
 BANNED = ["leak", "leaked build", "play early", "early access download", "free download", "crack", "piracy",
           "mod menu", "money glitch", "afk bot"]
@@ -44,6 +45,8 @@ def banned_in(text):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("clip"); ap.add_argument("--campaign"); ap.add_argument("--caption", default="")
+    ap.add_argument("--no-gate", action="store_true", help="skip the source gate (proof, fresh, dupes, subs, send test)")
+    ap.add_argument("--no-remix", action="store_true", help="allow a clip without the payoff-first remix")
     a = ap.parse_args()
     clip = Path(a.clip)
     res = []  # (name, ok, detail)
@@ -80,6 +83,20 @@ def main():
         add("required mention", ok, rules["mention"])
     if not have_campaign:
         add("campaign rules file", True, "none given, defaults used (NOT a rules check)")
+    remix = meta.get("remix") or {}
+    if not a.no_remix:
+        add("own edit (payoff-first remix)", bool(remix),
+            "made with remix.py" if remix else "plain cut: subtitles + credit do not count as original on Instagram/YouTube")
+    if have_campaign:
+        add("ad disclosure at the start", bool(remix.get("disclosure")),
+            remix.get("disclosure") or "paid campaign clips need e.g. 'Werbung' in the first seconds (remix.py \"disclosure\")")
+    if not a.no_gate:
+        job = clip.parent.parent
+        if (job / "candidates.json").exists():
+            for k, ok, d in gate_evaluate(job):
+                add(f"gate {k}", ok, d)
+        else:
+            add("source gate", False, f"no job folder found next to the clip ({job})")
 
     for n, ok, d in res:
         print(f"{'PASS' if ok else 'FAIL'}  {n}" + (f"  [{d}]" if d else ""))

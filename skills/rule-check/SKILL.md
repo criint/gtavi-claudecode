@@ -9,7 +9,7 @@ Run:
 
 `python "${CLAUDE_PLUGIN_ROOT}/scripts/check.py" <clip.mp4> --campaign campaigns.md`
 
-It checks: length, 1080x1920, audio present, the campaign's rules from `campaigns.md`, and banned content (leaks, "play early", piracy).
+It checks: length, 1080x1920, audio present, the campaign's rules from `campaigns.md`, banned content (leaks, "play early", piracy), that the clip is a `remix` (own edit), the ad disclosure for campaign clips, and the `source-gate` results in `jobs/<id>/gate.json`.
 
 Then:
 
