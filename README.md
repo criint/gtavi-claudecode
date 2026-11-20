@@ -61,6 +61,8 @@ No income is promised. Your result depends on speed, picks and hooks, and the sc
 | `live-mode` | Records a live stream and cuts a clip every time chat explodes |
 | `twitch-reaction` | Reaction clips like the viral ones: the streamer's face on top, the game below, a big title on the seam. Finds the top GTA 6 Twitch streams with no account, reads chat and finds the webcam by itself |
 | `clip-cutter` | 1080x1920 clip: word-by-word captions, hook box, -14 LUFS. Fill, blurred background or facecam on top |
+| `source-gate` | Proof frame that it is really GTA 6, under 24 h old, not already on 3+ pages, proofread subtitles, send test |
+| `remix` | Payoff-first edit: teaser with hook, white flash and whoosh, one freeze or slow-mo, punchline, ad disclosure |
 | `hook-writer` | 3 hook options per clip |
 | `rule-check` | Length, format, hashtags and banned content checked before you post |
 | `multilang` | One clip in 5 languages: translated word-by-word captions and hook in ES, PT, DE, RU, optional stock-voice hook. Non-English GTA pages are almost empty |
